@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Inversiones · Sociedad Deportiva Christiane Endler</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F5F3EE; --surface: #FFFFFF; --border: #E2DDD6;
+    --text: #1A1915; --muted: #7A766E; --faint: #B0ABA3;
+    --accent: #E8559A; --accent-light: #FDE8F3;
+    --green: #1D8A60; --green-light: #E2F5ED;
+    --amber: #B87333; --amber-light: #FBF0E3;
+    --red: #C03530; --red-light: #FCECEA;
+    --blue: #2563AB; --blue-light: #EBF2FB;
+    --mono: 'DM Mono', monospace; --sans: 'DM Sans', sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: var(--sans); background: var(--bg); color: var(--text); font-size: 14px; line-height: 1.6; min-height: 100vh; }
+  header { background: var(--text); color: #fff; padding: 2rem 2.5rem 1.5rem; display: flex; align-items: flex-end; justify-content: space-between; gap: 1rem; flex-wrap: wrap; }
+  header h1 { font-size: 22px; font-weight: 400; letter-spacing: -0.02em; line-height: 1.2; }
+  header h1 span { display: block; font-size: 12px; font-weight: 400; color: #888; font-family: var(--mono); margin-bottom: 4px; letter-spacing: 0.08em; text-transform: uppercase; }
+  .header-meta { text-align: right; font-family: var(--mono); font-size: 11px; color: #888; line-height: 1.8; }
+  .header-meta strong { color: #fff; font-weight: 500; }
+  main { max-width: 1100px; margin: 0 auto; padding: 2rem 1.5rem 4rem; }
+
+  /* SUMMARY */
+  .summary { display: grid; grid-template-columns: repeat(auto-fit, minmax(155px, 1fr)); gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; margin-bottom: 1rem; }
+  .sum-card { background: var(--surface); padding: 1.1rem 1.3rem; }
+  .sum-label { font-size: 11px; font-family: var(--mono); text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); margin-bottom: 5px; }
+  .sum-value { font-size: 19px; font-weight: 300; letter-spacing: -0.03em; font-family: var(--mono); }
+  .sum-sub { font-size: 11px; color: var(--faint); margin-top: 2px; }
+
+  /* MORA BANNER */
+  .mora-banner { background: var(--red-light); border: 1px solid #F0C0BE; border-radius: 10px; padding: 1.2rem 1.4rem; margin-bottom: 1.5rem; display: flex; flex-wrap: wrap; gap: 0; overflow: hidden; }
+  .mora-banner-title { font-size: 11px; font-family: var(--mono); text-transform: uppercase; letter-spacing: 0.08em; color: var(--red); margin-bottom: 4px; opacity: 0.7; }
+  .mora-col { flex: 1; min-width: 140px; padding: 0 1.2rem 0 0; border-right: 1px solid #F0C0BE; margin-right: 1.2rem; }
+  .mora-col:last-child { border-right: none; margin-right: 0; padding-right: 0; }
+  .mora-val { font-size: 22px; font-family: var(--mono); font-weight: 400; color: var(--red); letter-spacing: -0.03em; }
+  .mora-sub { font-size: 11px; color: var(--red); opacity: 0.65; font-family: var(--mono); margin-top: 2px; }
+  .mora-note { width: 100%; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #F0C0BE; font-size: 12px; color: var(--red); font-family: var(--mono); opacity: 0.8; line-height: 1.6; }
+
+  /* TABS */
+  .tabs { display: flex; gap: 4px; margin-bottom: 1.5rem; border-bottom: 1px solid var(--border); }
+  .tab { font-size: 13px; font-family: var(--mono); padding: 8px 16px; border: none; background: none; cursor: pointer; color: var(--muted); border-bottom: 2px solid transparent; margin-bottom: -1px; transition: color 0.15s; }
+  .tab:hover { color: var(--text); }
+  .tab.active { color: var(--text); border-bottom-color: var(--text); font-weight: 500; }
+  .panel { display: none; }
+  .panel.active { display: block; }
+
+  /* BLOCKS */
+  .contract-block { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; margin-bottom: 1.5rem; }
+  .contract-head { display: flex; align-items: center; gap: 14px; padding: 1.1rem 1.4rem; border-bottom: 1px solid var(--border); cursor: pointer; user-select: none; }
+  .contract-head:hover { background: var(--bg); }
+  .c-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+  .contract-name { font-weight: 500; font-size: 15px; }
+  .contract-desc { font-size: 12px; color: var(--muted); font-family: var(--mono); margin-top: 1px; }
+  .c-badge { margin-left: auto; font-size: 11px; font-family: var(--mono); padding: 3px 10px; border-radius: 20px; white-space: nowrap; }
+  .badge-red { background: var(--red-light); color: var(--red); }
+  .badge-amber { background: var(--amber-light); color: var(--amber); }
+  .badge-blue { background: var(--blue-light); color: var(--blue); }
+  .c-arrow { font-size: 11px; color: var(--faint); margin-left: 8px; transition: transform 0.2s; }
+  .stats-row { display: flex; gap: 0; border-bottom: 1px solid var(--border); flex-wrap: wrap; }
+  .stat { flex: 1; min-width: 120px; padding: 0.9rem 1.3rem; border-right: 1px solid var(--border); }
+  .stat:last-child { border-right: none; }
+  .stat-label { font-size: 11px; font-family: var(--mono); color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 3px; }
+  .stat-val { font-size: 15px; font-family: var(--mono); font-weight: 500; }
+
+  /* TABLE */
+  .tbl-wrap { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th { font-family: var(--mono); font-size: 10px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); padding: 9px 12px; text-align: left; background: var(--bg); border-bottom: 1px solid var(--border); white-space: nowrap; }
+  td { padding: 8px 12px; border-bottom: 1px solid var(--border); font-family: var(--mono); font-size: 12px; white-space: nowrap; }
+  tr:last-child td { border-bottom: none; }
+  tr.r-future td { color: var(--muted); }
+  tr.r-current { background: #FFFBF0; }
+  tr.r-overdue { background: #FFF5F5; }
+
+  /* PAGOS */
+  .reg-row { display: flex; align-items: center; gap: 14px; padding: 1rem 1.4rem; border-bottom: 1px solid var(--border); }
+  .reg-row:last-child { border-bottom: none; }
+  .reg-icon { width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
+  .reg-date { font-family: var(--mono); font-size: 12px; color: var(--muted); }
+  .reg-desc { font-size: 13px; font-weight: 500; }
+  .reg-note { font-size: 12px; color: var(--muted); }
+  .reg-amount { margin-left: auto; font-family: var(--mono); font-size: 15px; font-weight: 500; }
+
+  .note-bar { padding: 10px 14px; font-size: 12px; color: var(--muted); background: var(--bg); border-top: 1px solid var(--border); font-family: var(--mono); line-height: 1.6; }
+  .warn-bar { padding: 10px 14px; font-size: 12px; color: var(--amber); background: var(--amber-light); border-top: 1px solid var(--border); font-family: var(--mono); }
+  .alert-bar { padding: 10px 14px; font-size: 12px; color: var(--red); background: var(--red-light); border-top: 1px solid var(--border); font-family: var(--mono); }
+
+  .detail-grid { display: grid; grid-template-columns: 1fr 1fr; }
+  @media (max-width:600px) { .detail-grid { grid-template-columns: 1fr; } }
+  .detail-row { display: flex; justify-content: space-between; gap: 1rem; padding: 9px 14px; border-bottom: 1px solid var(--border); font-size: 13px; }
+  .detail-row:nth-child(odd) { border-right: 1px solid var(--border); }
+  .dk { color: var(--muted); font-family: var(--mono); font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; align-self: center; }
+  .dv { font-weight: 500; text-align: right; }
+
+  /* ALERTAS */
+  .alerts { display: flex; flex-direction: column; gap: 10px; margin-bottom: 1.5rem; }
+  .alert { display: flex; gap: 12px; padding: 1rem 1.2rem; border-radius: 8px; border: 1px solid; font-size: 13px; align-items: flex-start; }
+  .alert-icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+  .alert-title { font-weight: 500; margin-bottom: 2px; }
+  .a-red   { background: var(--red-light);   border-color: #F0C0BE; color: var(--red); }
+  .a-amber { background: var(--amber-light); border-color: #F0D8BE; color: var(--amber); }
+  .a-blue  { background: var(--blue-light);  border-color: #C0D8F0; color: var(--blue); }
+
+  /* FORM */
+  .add-form { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 1.4rem; margin-bottom: 1.5rem; }
+  .add-form h3 { font-size: 14px; font-weight: 500; margin-bottom: 1rem; }
+  .form-row { display: flex; gap: 10px; flex-wrap: wrap; }
+  .form-group { display: flex; flex-direction: column; gap: 4px; flex: 1; min-width: 140px; }
+  .form-group label { font-size: 11px; font-family: var(--mono); color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; }
+  .form-group input, .form-group select { padding: 7px 10px; border: 1px solid var(--border); border-radius: 6px; font-family: var(--mono); font-size: 13px; background: var(--bg); color: var(--text); outline: none; }
+  .form-group input:focus, .form-group select:focus { border-color: var(--accent); }
+  .btn-add { padding: 8px 20px; background: var(--text); color: #fff; border: none; border-radius: 6px; font-family: var(--mono); font-size: 13px; cursor: pointer; align-self: flex-end; }
+  .btn-add:hover { opacity: 0.8; }
+
+  .s-dot { width: 7px; height: 7px; border-radius: 50%; display: inline-block; margin-right: 5px; }
+  .s-overdue .s-dot { background: var(--red); }
+  .s-current .s-dot { background: var(--amber); }
+  .s-future  .s-dot { background: var(--faint); }
+
+  .v-green { color: var(--green); } .v-red { color: var(--red); }
+  .v-amber { color: var(--amber); } .v-accent { color: var(--accent); }
+
+  .footer-note { text-align: center; font-family: var(--mono); font-size: 11px; color: var(--faint); padding: 2rem 0 3rem; }
+  @media (max-width:640px) { header { padding: 1.5rem 1.2rem 1.2rem; } main { padding: 1.2rem 0.8rem 3rem; } .mora-col { min-width: 100%; border-right: none; margin-right: 0; padding-right: 0; border-bottom: 1px solid #F0C0BE; padding-bottom: 0.8rem; margin-bottom: 0.8rem; } }
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1><span>Sociedad Deportiva Christiane Endler SpA</span>Plan de inversiones — Health Sport SpA</h1>
+  </div>
+  <div class="header-meta">
+    <strong id="today-label"></strong><br>
+    Mutuante: SDCE SpA · Mutuaria: Health Sport SpA<br>
+    Cta. destino: Santander 0-000-8015674-0
+  </div>
+</header>
+
+<main>
+
+  <!-- RESUMEN PRINCIPAL -->
+  <div class="summary">
+    <div class="sum-card">
+      <div class="sum-label">Capital total prestado</div>
+      <div class="sum-value">$58.000.000</div>
+      <div class="sum-sub">Sin abono a capital</div>
+    </div>
+    <div class="sum-card">
+      <div class="sum-label">Interés devengado (7%)</div>
+      <div class="sum-value v-amber" id="int-devengado">—</div>
+      <div class="sum-sub" id="int-meses-sub">—</div>
+    </div>
+    <div class="sum-card">
+      <div class="sum-label">Pagado a intereses</div>
+      <div class="sum-value v-green" id="total-pagado-display">—</div>
+      <div class="sum-sub" id="pagos-count">—</div>
+    </div>
+    <div class="sum-card">
+      <div class="sum-label">Interés no cubierto</div>
+      <div class="sum-value v-red" id="int-pendiente">—</div>
+      <div class="sum-sub">interés sin pagar</div>
+    </div>
+    <div class="sum-card">
+      <div class="sum-label">Deuda total estimada</div>
+      <div class="sum-value v-accent" id="deuda-total">—</div>
+      <div class="sum-sub">capital + interés pendiente</div>
+    </div>
+  </div>
+
+  <!-- MORA BANNER -->
+  <div class="mora-banner">
+    <div class="mora-col">
+      <div class="mora-banner-title">Mora acumulada estimada (15% anual)</div>
+      <div class="mora-val" id="mora-total">—</div>
+      <div class="mora-sub">sobre capital no pagado · ambos contratos</div>
+    </div>
+    <div class="mora-col">
+      <div class="mora-banner-title">Mora CED ($30M)</div>
+      <div class="mora-val" id="mora-ced">—</div>
+      <div class="mora-sub">15% anual × <span id="mora-meses-ced">—</span> meses</div>
+    </div>
+    <div class="mora-col">
+      <div class="mora-banner-title">Mora Chicauma ($28M)</div>
+      <div class="mora-val" id="mora-chi">—</div>
+      <div class="mora-sub">15% anual × <span id="mora-meses-chi">—</span> meses</div>
+    </div>
+    <div class="mora-col">
+      <div class="mora-banner-title">Deuda total con mora</div>
+      <div class="mora-val" id="deuda-con-mora">—</div>
+      <div class="mora-sub">capital + interés + mora</div>
+    </div>
+    <div class="mora-note">
+      ⚠ La mora se calcula sobre el capital no pagado al 15% anual desde mayo 2025 (inicio del plazo contractual). Esta es una estimación conservadora: no incluye mora sobre intereses impagos ni capitalización compuesta. El monto real exigible puede ser mayor según la interpretación legal del contrato.
+    </div>
+  </div>
+
+  <!-- TABS -->
+  <div class="tabs">
+    <button class="tab active" onclick="showTab('overview', this)">Resumen</button>
+    <button class="tab" onclick="showTab('ced', this)">CED · $30M</button>
+    <button class="tab" onclick="showTab('chi', this)">Chicauma · $28M</button>
+    <button class="tab" onclick="showTab('pagos', this)">Pagos recibidos</button>
+    <button class="tab" onclick="showTab('alertas', this)">Alertas</button>
+  </div>
+
+  <!-- OVERVIEW -->
+  <div id="panel-overview" class="panel active">
+    <div class="contract-block">
+      <div class="contract-head" onclick="toggleBlock('ov-ced')">
+        <div class="c-dot" style="background:#2563AB"></div>
+        <div>
+          <div class="contract-name">Centro de Evaluación del Futbolista (CED)</div>
+          <div class="contract-desc">Mutuo · $30.000.000 · 24 meses · inicio mayo 2025</div>
+        </div>
+        <span class="c-badge badge-red">En mora</span>
+        <span class="c-arrow" id="arrow-ov-ced">▼</span>
+      </div>
+      <div id="block-ov-ced">
+        <div class="stats-row">
+          <div class="stat"><div class="stat-label">Capital</div><div class="stat-val">$30.000.000</div></div>
+          <div class="stat"><div class="stat-label">Interés devengado</div><div class="stat-val v-amber" id="ced-int-stat">—</div></div>
+          <div class="stat"><div class="stat-label">Pagado a interés</div><div class="stat-val v-green" id="ced-pagado-stat">—</div></div>
+          <div class="stat"><div class="stat-label">Mora acumulada</div><div class="stat-val v-red" id="ced-mora-stat">—</div></div>
+          <div class="stat"><div class="stat-label">Vencimiento</div><div class="stat-val">Abr 2027</div></div>
+        </div>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>#</th><th>Período</th><th>Cuota capital ref.</th><th>Interés corriente</th><th>Mora mensual (15%)</th><th>Total mes ref.</th><th>Estado</th></tr></thead>
+            <tbody id="ced-tbody"></tbody>
+          </table>
+        </div>
+        <div class="alert-bar">⚠ Capital $30M intacto · $1.396.552 imputado a intereses · Mora 15% activa desde mayo 2025 · Vence abr 2027</div>
+      </div>
+    </div>
+
+    <div class="contract-block">
+      <div class="contract-head" onclick="toggleBlock('ov-chi')">
+        <div class="c-dot" style="background:#1D8A60"></div>
+        <div>
+          <div class="contract-name">Fútbol Chicauma</div>
+          <div class="contract-desc">Mutuo · $28.000.000 · 60 meses · inicio mayo 2025</div>
+        </div>
+        <span class="c-badge badge-red">En mora</span>
+        <span class="c-arrow" id="arrow-ov-chi">▼</span>
+      </div>
+      <div id="block-ov-chi">
+        <div class="stats-row">
+          <div class="stat"><div class="stat-label">Capital</div><div class="stat-val">$28.000.000</div></div>
+          <div class="stat"><div class="stat-label">Interés devengado</div><div class="stat-val v-amber" id="chi-int-stat">—</div></div>
+          <div class="stat"><div class="stat-label">Pagado a interés</div><div class="stat-val v-green" id="chi-pagado-stat">—</div></div>
+          <div class="stat"><div class="stat-label">Mora acumulada</div><div class="stat-val v-red" id="chi-mora-stat">—</div></div>
+          <div class="stat"><div class="stat-label">Vencimiento</div><div class="stat-val">Abr 2030</div></div>
+        </div>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>#</th><th>Período</th><th>Cuota capital ref.</th><th>Interés corriente</th><th>Mora mensual (15%)</th><th>Total mes ref.</th><th>Estado</th></tr></thead>
+            <tbody id="chi-tbody"></tbody>
+          </table>
+        </div>
+        <div class="alert-bar">⚠ Capital $28M intacto · $1.303.448 imputado a intereses · Mora 15% activa desde mayo 2025 · Vence abr 2030</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CED DETAIL -->
+  <div id="panel-ced" class="panel">
+    <div class="contract-block">
+      <div class="stats-row">
+        <div class="stat"><div class="stat-label">Capital</div><div class="stat-val">$30.000.000</div></div>
+        <div class="stat"><div class="stat-label">Interés devengado</div><div class="stat-val v-amber" id="ced2-int">—</div></div>
+        <div class="stat"><div class="stat-label">Pagado a interés</div><div class="stat-val v-green" id="ced2-pagado">—</div></div>
+        <div class="stat"><div class="stat-label">Mora acumulada</div><div class="stat-val v-red" id="ced2-mora">—</div></div>
+        <div class="stat"><div class="stat-label">Plazo</div><div class="stat-val">24 meses</div></div>
+        <div class="stat"><div class="stat-label">Vence</div><div class="stat-val">Abr 2027</div></div>
+      </div>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>#</th><th>Período</th><th>Cuota capital ref.</th><th>Interés corriente</th><th>Mora mensual (15%)</th><th>Total mes ref.</th><th>Estado</th></tr></thead>
+          <tbody id="ced2-tbody"></tbody>
+        </table>
+      </div>
+      <div class="detail-grid">
+        <div class="detail-row"><span class="dk">JV asociado</span><span class="dv">Centro Evaluación del Futbolista</span></div>
+        <div class="detail-row"><span class="dk">Distribución utilidades</span><span class="dv">HS 80% / SDCE 20%</span></div>
+        <div class="detail-row"><span class="dk">Interés corriente</span><span class="dv">7% anual</span></div>
+        <div class="detail-row"><span class="dk">Interés moratorio</span><span class="dv">15% anual sobre saldos</span></div>
+        <div class="detail-row"><span class="dk">Cuenta destino</span><span class="dv">Santander 0-000-8015674-0</span></div>
+        <div class="detail-row"><span class="dk">Firma contrato</span><span class="dv">20 enero 2025</span></div>
+      </div>
+      <div class="alert-bar">⚠ 10 meses para vencimiento formal. Sin acuerdo de refinanciamiento, el capital completo es exigible en abril 2027.</div>
+    </div>
+  </div>
+
+  <!-- CHICAUMA DETAIL -->
+  <div id="panel-chi" class="panel">
+    <div class="contract-block">
+      <div class="stats-row">
+        <div class="stat"><div class="stat-label">Capital</div><div class="stat-val">$28.000.000</div></div>
+        <div class="stat"><div class="stat-label">Interés devengado</div><div class="stat-val v-amber" id="chi2-int">—</div></div>
+        <div class="stat"><div class="stat-label">Pagado a interés</div><div class="stat-val v-green" id="chi2-pagado">—</div></div>
+        <div class="stat"><div class="stat-label">Mora acumulada</div><div class="stat-val v-red" id="chi2-mora">—</div></div>
+        <div class="stat"><div class="stat-label">Plazo</div><div class="stat-val">60 meses</div></div>
+        <div class="stat"><div class="stat-label">Vence</div><div class="stat-val">Abr 2030</div></div>
+      </div>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>#</th><th>Período</th><th>Cuota capital ref.</th><th>Interés corriente</th><th>Mora mensual (15%)</th><th>Total mes ref.</th><th>Estado</th></tr></thead>
+          <tbody id="chi2-tbody"></tbody>
+        </table>
+      </div>
+      <div class="detail-grid">
+        <div class="detail-row"><span class="dk">JV asociado</span><span class="dv">Alto Tenis Chicauma</span></div>
+        <div class="detail-row"><span class="dk">Distribución utilidades</span><span class="dv">HS 75% / SDCE 25%</span></div>
+        <div class="detail-row"><span class="dk">Interés corriente</span><span class="dv">7% anual</span></div>
+        <div class="detail-row"><span class="dk">Interés moratorio</span><span class="dv">15% anual sobre saldos</span></div>
+        <div class="detail-row"><span class="dk">Cuenta destino</span><span class="dv">Santander 0-000-8015674-0</span></div>
+        <div class="detail-row"><span class="dk">Firma contrato</span><span class="dv">20 enero 2025</span></div>
+      </div>
+      <div class="warn-bar">⚠ Plazo más largo (abril 2030), pero mora activa igual desde mayo 2025.</div>
+    </div>
+  </div>
+
+  <!-- PAGOS -->
+  <div id="panel-pagos" class="panel">
+    <div class="add-form">
+      <h3>Registrar nuevo pago recibido</h3>
+      <div class="form-row">
+        <div class="form-group"><label>Fecha</label><input type="date" id="in-fecha"></div>
+        <div class="form-group"><label>Monto ($)</label><input type="number" id="in-monto" placeholder="0"></div>
+        <div class="form-group">
+          <label>Imputar a</label>
+          <select id="in-tipo">
+            <option value="interes">Intereses</option>
+            <option value="mora">Mora</option>
+            <option value="capital-ced">Capital CED</option>
+            <option value="capital-chi">Capital Chicauma</option>
+            <option value="capital-ambos">Capital ambos (proporcional)</option>
+          </select>
+        </div>
+        <div class="form-group"><label>Concepto</label><input type="text" id="in-concepto" placeholder="ej. Abono mensual"></div>
+        <button class="btn-add" onclick="agregarPago()">+ Registrar</button>
+      </div>
+    </div>
+    <div class="contract-block">
+      <div id="pagos-list"></div>
+      <div class="note-bar" id="pagos-footer">—</div>
+    </div>
+  </div>
+
+  <!-- ALERTAS -->
+  <div id="panel-alertas" class="panel">
+    <div class="alerts">
+      <div class="alert a-red">
+        <div class="alert-icon">🔴</div>
+        <div><div class="alert-title">Capital $58.000.000 sin ningún abono</div>A junio 2026 (13 meses desde inicio), no se ha recibido ningún pago a capital. Los $2.700.000 de diciembre 2025 solo cubren parte del interés devengado.</div>
+      </div>
+      <div class="alert a-red">
+        <div class="alert-icon">🔴</div>
+        <div><div class="alert-title">Mora del 15% anual activa en ambos contratos desde mayo 2025</div>El interés moratorio se aplica sobre el capital no pagado. La mora acumulada estimada supera los $10M entre ambos contratos y crece cada mes.</div>
+      </div>
+      <div class="alert a-red">
+        <div class="alert-icon">🔴</div>
+        <div><div class="alert-title">CED vence en ~10 meses (abril 2027)</div>El capital completo de $30.000.000 más intereses y mora son exigibles en abril 2027. Sin acuerdo de refinanciamiento antes de esa fecha, la deuda es judicialmente cobrable.</div>
+      </div>
+      <div class="alert a-amber">
+        <div class="alert-icon">🟡</div>
+        <div><div class="alert-title">Pagos llegan de SUPERMATCH SPA, no de Health Sport SpA</div>Los comprobantes de diciembre 2025 provienen de RUT 78.020.419-2 (SUPERMATCH SPA). Confirmar autorización y validez legal de estos pagos como abono al mutuo.</div>
+      </div>
+      <div class="alert a-amber">
+        <div class="alert-icon">🟡</div>
+        <div><div class="alert-title">Sin calendario de pagos formalizado</div>Los contratos dicen "se pagará cuando la mutuaria pueda". Firmar un anexo con cuotas mínimas mensuales es urgente para proteger los derechos de SDCE.</div>
+      </div>
+      <div class="alert a-blue">
+        <div class="alert-icon">🔵</div>
+        <div><div class="alert-title">Utilidades trimestrales no recibidas</div>Ambos JV contemplan distribución trimestral (20% CED, 25% Chicauma). Solicitar balances trimestrales a Health Sport según cláusula del contrato.</div>
+      </div>
+    </div>
+  </div>
+
+</main>
+<div class="footer-note">SDCE SpA · Plan de inversiones Health Sport · Solo para uso interno</div>
+
+<script>
+const CED_CAP = 30000000;
+const CHI_CAP = 28000000;
+const TOTAL_CAP = 58000000;
+const TASA_INT = 0.07;
+const TASA_MORA = 0.15;
+const PAGO_INICIAL = 2700000;
+
+const today = new Date(2026, 5, 4);
+document.getElementById('today-label').textContent = today.toLocaleDateString('es-CL', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
+
+function clp(n) { return '$' + Math.round(n).toLocaleString('es-CL'); }
+
+function mesesDesde(yr, mo) {
+  const start = new Date(yr, mo, 1);
+  return (today.getFullYear() - start.getFullYear()) * 12 + (today.getMonth() - start.getMonth());
+}
+
+let pagosExtra = [];
+
+function totalPagado() {
+  return PAGO_INICIAL + pagosExtra.reduce((s,p) => s + p.monto, 0);
+}
+
+function updateSummary() {
+  const m = mesesDesde(2025, 4); // desde mayo 2025
+  const cedInt = CED_CAP * TASA_INT / 12 * m;
+  const chiInt = CHI_CAP * TASA_INT / 12 * m;
+  const totalInt = cedInt + chiInt;
+
+  // mora sobre capital completo (no se ha pagado nada a capital)
+  const cedMora = CED_CAP * TASA_MORA / 12 * m;
+  const chiMora = CHI_CAP * TASA_MORA / 12 * m;
+  const totalMora = cedMora + chiMora;
+
+  const pagado = totalPagado();
+  const intPend = Math.max(0, totalInt - pagado);
+  const deudaSinMora = TOTAL_CAP + intPend;
+  const deudaConMora = TOTAL_CAP + intPend + totalMora;
+
+  // Pago proporcional por contrato
+  const cedPago = PAGO_INICIAL * (CED_CAP / TOTAL_CAP);
+  const chiPago = PAGO_INICIAL * (CHI_CAP / TOTAL_CAP);
+
+  // Summary
+  document.getElementById('int-devengado').textContent = clp(totalInt);
+  document.getElementById('int-meses-sub').textContent = m + ' meses desde mayo 2025';
+  document.getElementById('total-pagado-display').textContent = clp(pagado);
+  document.getElementById('pagos-count').textContent = (2 + pagosExtra.length) + ' pagos recibidos';
+  document.getElementById('int-pendiente').textContent = clp(intPend);
+  document.getElementById('deuda-total').textContent = clp(deudaSinMora);
+
+  // Mora banner
+  document.getElementById('mora-total').textContent = clp(totalMora);
+  document.getElementById('mora-ced').textContent = clp(cedMora);
+  document.getElementById('mora-chi').textContent = clp(chiMora);
+  document.getElementById('mora-meses-ced').textContent = m;
+  document.getElementById('mora-meses-chi').textContent = m;
+  document.getElementById('deuda-con-mora').textContent = clp(deudaConMora);
+
+  // CED stats
+  ['ced-int-stat','ced2-int'].forEach(id => { const el=document.getElementById(id); if(el) el.textContent=clp(cedInt); });
+  ['ced-pagado-stat','ced2-pagado'].forEach(id => { const el=document.getElementById(id); if(el) el.textContent=clp(cedPago); });
+  ['ced-mora-stat','ced2-mora'].forEach(id => { const el=document.getElementById(id); if(el) el.textContent=clp(cedMora); });
+
+  // CHI stats
+  ['chi-int-stat','chi2-int'].forEach(id => { const el=document.getElementById(id); if(el) el.textContent=clp(chiInt); });
+  ['chi-pagado-stat','chi2-pagado'].forEach(id => { const el=document.getElementById(id); if(el) el.textContent=clp(chiPago); });
+  ['chi-mora-stat','chi2-mora'].forEach(id => { const el=document.getElementById(id); if(el) el.textContent=clp(chiMora); });
+
+  document.getElementById('pagos-footer').textContent = 'Total recibido: ' + clp(pagado) + ' · Capital pendiente: ' + clp(TOTAL_CAP) + ' · Deuda total con mora: ' + clp(deudaConMora);
+}
+
+function monthLabel(yr, mo, offset) {
+  const d = new Date(yr, mo + offset, 1);
+  return d.toLocaleDateString('es-CL', { month:'short', year:'numeric' });
+}
+
+function rowStatus(yr, mo, offset) {
+  const due = new Date(yr, mo + offset + 1, 5);
+  if (due.getFullYear() === today.getFullYear() && due.getMonth() === today.getMonth()) return 'current';
+  if (due < today) return 'overdue';
+  return 'future';
+}
+
+function statusHTML(s) {
+  const l = { current:'Este mes', overdue:'Vencido', future:'Pendiente' };
+  return `<span class="s-${s}"><span class="s-dot"></span>${l[s]}</span>`;
+}
+
+function buildTable(tbodyId, capital, months, yr, mo) {
+  const tbody = document.getElementById(tbodyId);
+  if (!tbody) return;
+  tbody.innerHTML = '';
+  const cuota = capital / months;
+  const intMens = capital * TASA_INT / 12;
+  const moraMens = capital * TASA_MORA / 12;
+  for (let i = 0; i < months; i++) {
+    const s = rowStatus(yr, mo, i);
+    const moraCell = s === 'future' ? `<td style="color:var(--faint)">—</td>` : `<td style="color:var(--red)">${clp(moraMens)}</td>`;
+    const totalRef = s === 'future' ? clp(cuota + intMens) : clp(cuota + intMens + moraMens);
+    const tr = document.createElement('tr');
+    tr.className = 'r-' + s;
+    tr.innerHTML = `<td style="color:var(--faint)">${i+1}</td><td>${monthLabel(yr, mo, i)}</td><td>${clp(cuota)}</td><td style="color:var(--muted)">${clp(intMens)}</td>${moraCell}<td style="font-weight:500">${totalRef}</td><td>${statusHTML(s)}</td>`;
+    tbody.appendChild(tr);
+  }
+}
+
+function renderPagos() {
+  const list = document.getElementById('pagos-list');
+  const base = [
+    { fecha:'03-12-2025', monto:1000000, origen:'José Manuel Espinosa / SUPERMATCH SPA', concepto:'Pago de Subsidios · imputado a intereses' },
+    { fecha:'06-12-2025', monto:1700000, origen:'José Manuel Espinosa / SUPERMATCH SPA', concepto:'Pago de Subsidios · imputado a intereses' },
+  ];
+  list.innerHTML = '';
+  base.forEach(p => {
+    list.innerHTML += `<div class="reg-row">
+      <div class="reg-icon" style="background:var(--green-light);color:var(--green)">✓</div>
+      <div><div class="reg-date">${p.fecha}</div><div class="reg-desc">${p.origen}</div><div class="reg-note">${p.concepto}</div></div>
+      <div class="reg-amount" style="color:var(--green)">${clp(p.monto)}</div>
+    </div>`;
+  });
+  pagosExtra.forEach((p, idx) => {
+    list.innerHTML += `<div class="reg-row">
+      <div class="reg-icon" style="background:var(--blue-light);color:var(--blue)">+</div>
+      <div><div class="reg-date">${p.fecha}</div><div class="reg-desc">${p.concepto}</div><div class="reg-note">${p.tipo}</div></div>
+      <div style="text-align:right">
+        <div class="reg-amount" style="color:var(--blue)">${clp(p.monto)}</div>
+        <button onclick="eliminarPago(${idx})" style="font-size:11px;color:var(--red);background:none;border:none;cursor:pointer;font-family:var(--mono)">eliminar</button>
+      </div>
+    </div>`;
+  });
+}
+
+function agregarPago() {
+  const fecha = document.getElementById('in-fecha').value;
+  const monto = parseInt(document.getElementById('in-monto').value);
+  const tipo = document.getElementById('in-tipo').value;
+  const concepto = document.getElementById('in-concepto').value || 'Sin concepto';
+  if (!fecha || !monto || monto <= 0) { alert('Ingresa fecha y monto válidos.'); return; }
+  const tipoLabel = { interes:'Imputado a intereses', mora:'Imputado a mora', 'capital-ced':'Capital CED', 'capital-chi':'Capital Chicauma', 'capital-ambos':'Capital proporcional ambos' };
+  pagosExtra.push({ fecha: fecha.split('-').reverse().join('-'), monto, tipo: tipoLabel[tipo], concepto });
+  document.getElementById('in-fecha').value = '';
+  document.getElementById('in-monto').value = '';
+  document.getElementById('in-concepto').value = '';
+  renderPagos();
+  updateSummary();
+}
+
+function eliminarPago(idx) { pagosExtra.splice(idx,1); renderPagos(); updateSummary(); }
+
+function showTab(tab, btn) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('panel-' + tab).classList.add('active');
+  btn.classList.add('active');
+}
+
+function toggleBlock(id) {
+  const block = document.getElementById('block-' + id);
+  const arrow = document.getElementById('arrow-' + id);
+  const open = block.style.display !== 'none';
+  block.style.display = open ? 'none' : '';
+  arrow.style.transform = open ? 'rotate(-90deg)' : 'rotate(0)';
+}
+
+buildTable('ced-tbody',  CED_CAP, 24, 2025, 4);
+buildTable('chi-tbody',  CHI_CAP, 60, 2025, 4);
+buildTable('ced2-tbody', CED_CAP, 24, 2025, 4);
+buildTable('chi2-tbody', CHI_CAP, 60, 2025, 4);
+renderPagos();
+updateSummary();
+</script>
+</body>
+</html>
