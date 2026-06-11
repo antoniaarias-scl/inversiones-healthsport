@@ -417,8 +417,9 @@ function updateSummary() {
   const totalInt = cedInt + chiInt;
 
   // mora sobre capital completo (no se ha pagado nada a capital)
-  const cedMora = CED_CAP * TASA_MORA / 12 * m;
-  const chiMora = CHI_CAP * TASA_MORA / 12 * m;
+  const mMora = mesesDesde(2026, 0);
+  const cedMora = CED_CAP * TASA_MORA / 12 * mMora;
+  const chiMora = CHI_CAP * TASA_MORA / 12 * mMora;
   const totalMora = cedMora + chiMora;
 
   const pagado = totalPagado();
@@ -485,8 +486,13 @@ function buildTable(tbodyId, capital, months, yr, mo) {
   const moraMens = capital * TASA_MORA / 12;
   for (let i = 0; i < months; i++) {
     const s = rowStatus(yr, mo, i);
-    const moraCell = s === 'future' ? `<td style="color:var(--faint)">—</td>` : `<td style="color:var(--red)">${clp(moraMens)}</td>`;
-    const totalRef = s === 'future' ? clp(cuota + intMens) : clp(cuota + intMens + moraMens);
+    // Mora solo aplica desde enero 2026
+    const rowDate = new Date(yr, mo + i, 1);
+    const moraActiva = rowDate >= new Date(2026, 0, 1) && s !== 'future';
+    const moraCell = moraActiva
+      ? `<td style="color:var(--red)">${clp(moraMens)}</td>`
+      : `<td style="color:var(--faint)">—</td>`;
+    const totalRef = moraActiva ? clp(cuota + intMens + moraMens) : clp(cuota + intMens);
     const tr = document.createElement('tr');
     tr.className = 'r-' + s;
     tr.innerHTML = `<td style="color:var(--faint)">${i+1}</td><td>${monthLabel(yr, mo, i)}</td><td>${clp(cuota)}</td><td style="color:var(--muted)">${clp(intMens)}</td>${moraCell}<td style="font-weight:500">${totalRef}</td><td>${statusHTML(s)}</td>`;
